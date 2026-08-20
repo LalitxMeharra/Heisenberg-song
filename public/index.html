@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Private Music Player</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+    input { padding: 10px; width: 60%; border-radius: 5px; border: none; }
+    button { padding: 10px 15px; border: none; border-radius: 5px; background: #22c55e; color: #fff; cursor: pointer; }
+    .card { background: #1e293b; margin: 10px auto; padding: 10px; border-radius: 8px; width: 60%; display: flex; align-items: center; gap: 15px; }
+    img { width: 50px; height: 50px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>🎵 Custom JioSaavn Music Streamer</h2>
+  <input type="text" id="query" placeholder="Gaane ka naam search karo...">
+  <button onclick="searchMusic()">Search</button>
+
+  <div id="results"></div>
+  <br>
+  <audio id="audioPlayer" controls style="width: 60%;"></audio>
+
+  <script>
+    async function searchMusic() {
+      const q = document.getElementById('query').value;
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      data.data.forEach(song => {
+        container.innerHTML += `
+          <div class="card">
+            <img src="${song.image}" alt="cover">
+            <div style="flex:1; text-align:left;">
+              <b>${song.title}</b><br><small>${song.artists}</small>
+            </div>
+            <button onclick="playSong('${song.stream_url}')">Play</button>
+          </div>
+        `;
+      });
+    }
+
+    function playSong(streamUrl) {
+      const player = document.getElementById('audioPlayer');
+      player.src = streamUrl;
+      player.play();
+    }
+  </script>
+</body>
+</html>
